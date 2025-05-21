@@ -2,13 +2,13 @@
 
 import * as LocalAuthentication from "expo-local-authentication";
 import { useRouter } from "expo-router";
+import { Fingerprint, Scan } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   Image,
   Platform,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -159,27 +159,29 @@ function AuthScreen() {
     }
   };
 
-  // Get appropriate icon
+  // Get appropriate icon component
   const getAuthIcon = () => {
     if (biometricType === "facial") {
-      return "https://placeholder.svg?height=24&width=24&text=face";
+      return <Scan size={24} color="#FFFFFF" />;
     }
-    return "https://placeholder.svg?height=24&width=24&text=finger";
+    return <Fingerprint size={24} color="#FFFFFF" />;
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.logoContainer}>
+    <SafeAreaView className="flex-1 bg-[#F5F7FA]">
+      <View className="items-center mt-15">
         <Image
           source={{ uri: "https://placeholder.svg?height=100&width=100" }}
-          style={styles.logo}
+          className="w-25 h-25 rounded-[20px]"
         />
-        <Text style={styles.appName}>Ryt Bank</Text>
+        <Text className="text-2xl font-bold text-[#0047CC] mt-4">Ryt Bank</Text>
       </View>
 
-      <View style={styles.contentContainer}>
-        <Text style={styles.welcomeText}>Welcome back</Text>
-        <Text style={styles.subtitle}>
+      <View className="flex-1 justify-center items-center px-6">
+        <Text className="text-2xl font-semibold text-[#1A1A1A] mb-3">
+          Welcome back
+        </Text>
+        <Text className="text-base text-[#666666] text-center mb-10">
           Please authenticate using{" "}
           {biometricType === "facial"
             ? "Face ID"
@@ -192,7 +194,7 @@ function AuthScreen() {
         </Text>
 
         <TouchableOpacity
-          style={styles.authButton}
+          className="flex-row items-center justify-center bg-[#0047CC] py-4 px-6 rounded-xl w-full max-w-[300px]"
           onPress={handleBiometricAuth}
           disabled={isLoading || !biometricType}
         >
@@ -200,86 +202,20 @@ function AuthScreen() {
             <ActivityIndicator color="#fff" />
           ) : (
             <>
-              <Image source={{ uri: getAuthIcon() }} style={styles.authIcon} />
-              <Text style={styles.authButtonText}>{getAuthButtonText()}</Text>
+              {getAuthIcon()}
+              <Text className="text-white text-base font-semibold ml-2">
+                {getAuthButtonText()}
+              </Text>
             </>
           )}
         </TouchableOpacity>
       </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Secure Banking • Trusted Service</Text>
+      <View className="p-6 items-center">
+        <Text className="text-[#666666] text-sm">
+          Secure Banking • Trusted Service
+        </Text>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F5F7FA",
-  },
-  logoContainer: {
-    alignItems: "center",
-    marginTop: 60,
-  },
-  logo: {
-    width: 100,
-    height: 100,
-    borderRadius: 20,
-  },
-  appName: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#0047CC",
-    marginTop: 16,
-  },
-  contentContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 24,
-  },
-  welcomeText: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#1A1A1A",
-    marginBottom: 12,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 40,
-  },
-  authButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#0047CC",
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    width: "100%",
-    maxWidth: 300,
-  },
-  authButtonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-    marginLeft: 8,
-  },
-  authIcon: {
-    width: 24,
-    height: 24,
-    tintColor: "#FFFFFF",
-  },
-  footer: {
-    padding: 24,
-    alignItems: "center",
-  },
-  footerText: {
-    color: "#666",
-    fontSize: 14,
-  },
-});

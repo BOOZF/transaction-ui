@@ -1,86 +1,90 @@
 import { formatCurrency, formatDate } from "@/app/utils/formatters";
-import { Ionicons } from "@expo/vector-icons";
+import {
+  ArrowLeftRight,
+  Banknote,
+  Car,
+  CreditCard,
+  Film,
+  ShoppingCart,
+  Utensils,
+  Zap,
+} from "lucide-react-native";
 import type React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
-interface TransactionItemProps {
-  transaction: Transaction;
-  onPress: () => void;
-  amountsVisible: boolean;
-}
-
-const TransactionItem: React.FC<TransactionItemProps> = ({
+export default function TransactionItem({
   transaction,
   onPress,
   amountsVisible,
-}) => {
+}: TransactionItemProps) {
   const { type, description, amount, date, category } = transaction;
 
-  const getIconName = () => {
+  const getIcon = () => {
+    const iconColor = type === "credit" ? "#0047CC" : "#FF9800";
+    const size = 20;
+
     switch (category) {
       case "shopping":
-        return "cart-outline";
+        return <ShoppingCart size={size} color={iconColor} />;
       case "food":
-        return "restaurant-outline";
+        return <Utensils size={size} color={iconColor} />;
       case "transport":
-        return "car-outline";
+        return <Car size={size} color={iconColor} />;
       case "entertainment":
-        return "film-outline";
+        return <Film size={size} color={iconColor} />;
       case "utilities":
-        return "flash-outline";
+        return <Zap size={size} color={iconColor} />;
       case "salary":
-        return "cash-outline";
+        return <Banknote size={size} color={iconColor} />;
       case "transfer":
-        return "swap-horizontal-outline";
+        return <ArrowLeftRight size={size} color={iconColor} />;
       default:
-        return "card-outline";
+        return <CreditCard size={size} color={iconColor} />;
     }
   };
 
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
+    <TouchableOpacity
+      className="flex-row items-center bg-white rounded-xl p-4 mb-3 shadow-sm"
+      onPress={onPress}
+    >
       <View
-        style={[
-          styles.iconContainer,
-          { backgroundColor: type === "credit" ? "#E3F2FD" : "#FFF3E0" },
-        ]}
+        className={`w-10 h-10 rounded-full justify-center items-center mr-3 ${
+          type === "credit" ? "bg-[#E3F2FD]" : "bg-[#FFF3E0]"
+        }`}
       >
-        <Ionicons
-          name={getIconName()}
-          size={20}
-          color={type === "credit" ? "#0047CC" : "#FF9800"}
-        />
+        {getIcon()}
       </View>
 
-      <View style={styles.detailsContainer}>
-        <Text style={styles.description} numberOfLines={1}>
+      <View className="flex-1">
+        <Text
+          className="text-base font-medium text-[#1A1A1A] mb-1"
+          numberOfLines={1}
+        >
           {description}
         </Text>
-        <Text style={styles.date}>{formatDate(date)}</Text>
+        <Text className="text-sm text-[#666666]">{formatDate(date)}</Text>
       </View>
 
-      <View style={styles.amountContainer}>
+      <View className="items-end">
         <Text
-          style={[
-            styles.amount,
-            { color: type === "credit" ? "#0047CC" : "#FF3B30" },
-          ]}
+          className={`text-base font-semibold mb-1 ${
+            type === "credit" ? "text-[#0047CC]" : "text-[#FF3B30]"
+          }`}
         >
           {amountsVisible
             ? `${type === "credit" ? "+" : "-"}${formatCurrency(amount)}`
             : "••••••••"}
         </Text>
         <View
-          style={[
-            styles.typeIndicator,
-            { backgroundColor: type === "credit" ? "#E3F2FD" : "#FFF3E0" },
-          ]}
+          className={`px-2 py-1 rounded-xl ${
+            type === "credit" ? "bg-[#E3F2FD]" : "bg-[#FFF3E0]"
+          }`}
         >
           <Text
-            style={[
-              styles.typeText,
-              { color: type === "credit" ? "#0047CC" : "#FF9800" },
-            ]}
+            className={`text-xs font-medium ${
+              type === "credit" ? "text-[#0047CC]" : "text-[#FF9800]"
+            }`}
           >
             {type === "credit" ? "Received" : "Sent"}
           </Text>
@@ -88,60 +92,4 @@ const TransactionItem: React.FC<TransactionItemProps> = ({
       </View>
     </TouchableOpacity>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  detailsContainer: {
-    flex: 1,
-  },
-  description: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#1A1A1A",
-    marginBottom: 4,
-  },
-  date: {
-    fontSize: 14,
-    color: "#666666",
-  },
-  amountContainer: {
-    alignItems: "flex-end",
-  },
-  amount: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 4,
-  },
-  typeIndicator: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  typeText: {
-    fontSize: 12,
-    fontWeight: "500",
-  },
-});
-
-export default TransactionItem;
+}

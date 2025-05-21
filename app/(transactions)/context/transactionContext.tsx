@@ -1,6 +1,6 @@
 "use client";
 
-import { mockTransactions } from "@/app/data/mockTransaction";
+import { mockTransactions } from "@/app/(transactions)/context/mockTransaction";
 import type React from "react";
 import { createContext, useContext, useState, type ReactNode } from "react";
 

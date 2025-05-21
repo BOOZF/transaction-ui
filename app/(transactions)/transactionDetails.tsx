@@ -1,14 +1,20 @@
 "use client";
 
-import { Ionicons } from "@expo/vector-icons";
 import * as LocalAuthentication from "expo-local-authentication";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import {
+  AlertCircle,
+  ArrowDown,
+  ArrowLeft,
+  ArrowUp,
+  Eye,
+  Flag,
+} from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -89,23 +95,27 @@ export default function TransactionDetailScreen() {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center bg-[#F5F7FA]">
         <ActivityIndicator size="large" color="#0047CC" />
-        <Text style={styles.loadingText}>Loading transaction details...</Text>
+        <Text className="mt-3 text-base text-[#666666]">
+          Loading transaction details...
+        </Text>
       </View>
     );
   }
 
   if (!transaction) {
     return (
-      <View style={styles.errorContainer}>
-        <Ionicons name="alert-circle-outline" size={48} color="#FF3B30" />
-        <Text style={styles.errorText}>Transaction not found</Text>
+      <View className="flex-1 justify-center items-center bg-[#F5F7FA] p-6">
+        <AlertCircle size={48} color="#FF3B30" />
+        <Text className="mt-3 text-lg text-[#1A1A1A]">
+          Transaction not found
+        </Text>
         <TouchableOpacity
-          style={styles.backButton}
+          className="mt-6 bg-[#0047CC] py-3 px-6 rounded-lg"
           onPress={() => router.back()}
         >
-          <Text style={styles.backButtonText}>Go Back</Text>
+          <Text className="text-base font-semibold text-white">Go Back</Text>
         </TouchableOpacity>
       </View>
     );
@@ -113,73 +123,69 @@ export default function TransactionDetailScreen() {
 
   return (
     <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
+      className="flex-1 bg-[#F5F7FA]"
+      contentContainerStyle={{ padding: 16 }}
     >
-      <View style={styles.headerBar}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButtonSmall}
-        >
-          <Ionicons name="arrow-back" size={24} color="#0047CC" />
+      <View className="flex-row items-center justify-between py-4 mb-2 mt-10">
+        <TouchableOpacity onPress={() => router.back()} className="p-1">
+          <ArrowLeft size={24} color="#0047CC" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Transaction Details</Text>
-        <View style={{ width: 24 }} />
+        <Text className="text-lg font-bold text-[#1A1A1A]">
+          Transaction Details
+        </Text>
+        <View className="w-6" />
       </View>
 
-      <View style={styles.card}>
-        <View style={styles.header}>
+      <View className="bg-white rounded-xl p-4 mb-4 shadow-sm">
+        <View className="flex-row justify-between items-center mb-6">
           <View
-            style={[
-              styles.typeIndicator,
-              {
-                backgroundColor:
-                  transaction.type === "credit" ? "#E3F2FD" : "#FFF3E0",
-              },
-            ]}
+            className={`flex-row items-center px-3 py-1.5 rounded-2xl ${
+              transaction.type === "credit" ? "bg-[#E3F2FD]" : "bg-[#FFF3E0]"
+            }`}
           >
-            <Ionicons
-              name={transaction.type === "credit" ? "arrow-down" : "arrow-up"}
-              size={16}
-              color={transaction.type === "credit" ? "#0047CC" : "#FF9800"}
-            />
+            {transaction.type === "credit" ? (
+              <ArrowDown size={16} color="#0047CC" />
+            ) : (
+              <ArrowUp size={16} color="#FF9800" />
+            )}
             <Text
-              style={[
-                styles.typeText,
-                {
-                  color: transaction.type === "credit" ? "#0047CC" : "#FF9800",
-                },
-              ]}
+              className={`text-sm font-semibold ml-1 ${
+                transaction.type === "credit"
+                  ? "text-[#0047CC]"
+                  : "text-[#FF9800]"
+              }`}
             >
               {transaction.type === "credit" ? "Received" : "Sent"}
             </Text>
           </View>
-          <Text style={styles.date}>
+          <Text className="text-sm text-[#666666]">
             {formatDate(transaction.date)} at {formatTime(transaction.date)}
           </Text>
         </View>
 
-        <View style={styles.amountContainer}>
-          <Text style={styles.amountLabel}>Amount</Text>
-          <View style={styles.amountRow}>
-            <Text style={styles.amount}>
+        <View className="mb-6">
+          <Text className="text-sm text-[#666666] mb-1">Amount</Text>
+          <View className="flex-row items-center">
+            <Text className="text-3xl font-bold text-[#1A1A1A]">
               {amountVisible ? formatCurrency(transaction.amount) : "••••••••"}
             </Text>
             {!amountVisible && (
               <TouchableOpacity
                 onPress={handleRevealAmount}
-                style={styles.revealButton}
+                className="flex-row items-center bg-[#E3F2FD] px-3 py-1.5 rounded-2xl ml-3"
               >
-                <Ionicons name="eye-outline" size={20} color="#0047CC" />
-                <Text style={styles.revealText}>Reveal</Text>
+                <Eye size={20} color="#0047CC" />
+                <Text className="text-sm font-semibold text-[#0047CC] ml-1">
+                  Reveal
+                </Text>
               </TouchableOpacity>
             )}
           </View>
         </View>
 
-        <View style={styles.divider} />
+        <View className="h-px bg-[#E5E5E5] my-4" />
 
-        <View style={styles.detailsContainer}>
+        <View className="mb-2">
           <DetailRow label="Transaction ID" value={transaction.id} />
           <DetailRow label="Description" value={transaction.description} />
           <DetailRow label="Category" value={transaction.category} />
@@ -191,9 +197,11 @@ export default function TransactionDetailScreen() {
 
         {transaction.merchant && (
           <>
-            <View style={styles.divider} />
-            <View style={styles.merchantContainer}>
-              <Text style={styles.sectionTitle}>Merchant Details</Text>
+            <View className="h-px bg-[#E5E5E5] my-4" />
+            <View className="mb-2">
+              <Text className="text-base font-semibold text-[#1A1A1A] mb-3">
+                Merchant Details
+              </Text>
               <DetailRow label="Name" value={transaction.merchant.name} />
               {transaction.merchant.location && (
                 <DetailRow
@@ -206,190 +214,21 @@ export default function TransactionDetailScreen() {
         )}
       </View>
 
-      <TouchableOpacity style={styles.reportButton}>
-        <Ionicons name="flag-outline" size={20} color="#FF3B30" />
-        <Text style={styles.reportButtonText}>Report an Issue</Text>
+      <TouchableOpacity className="flex-row items-center justify-center bg-white py-4 rounded-xl mb-6">
+        <Flag size={20} color="#FF3B30" />
+        <Text className="text-base font-semibold text-[#FF3B30] ml-2">
+          Report an Issue
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
 
 const DetailRow = ({ label, value }: { label: string; value: string }) => (
-  <View style={styles.detailRow}>
-    <Text style={styles.detailLabel}>{label}</Text>
-    <Text style={styles.detailValue}>{value}</Text>
+  <View className="flex-row justify-between py-2">
+    <Text className="text-sm text-[#666666]">{label}</Text>
+    <Text className="text-sm text-[#1A1A1A] font-medium max-w-[60%] text-right">
+      {value}
+    </Text>
   </View>
 );
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F5F7FA",
-  },
-  contentContainer: {
-    padding: 16,
-  },
-  headerBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 16,
-    marginBottom: 8,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#1A1A1A",
-  },
-  backButtonSmall: {
-    padding: 4,
-  },
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 24,
-  },
-  typeIndicator: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  typeText: {
-    fontSize: 14,
-    fontWeight: "600",
-    marginLeft: 4,
-  },
-  date: {
-    fontSize: 14,
-    color: "#666666",
-  },
-  amountContainer: {
-    marginBottom: 24,
-  },
-  amountLabel: {
-    fontSize: 14,
-    color: "#666666",
-    marginBottom: 4,
-  },
-  amountRow: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  amount: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#1A1A1A",
-  },
-  revealButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#E3F2FD",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    marginLeft: 12,
-  },
-  revealText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#0047CC",
-    marginLeft: 4,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#E5E5E5",
-    marginVertical: 16,
-  },
-  detailsContainer: {
-    marginBottom: 8,
-  },
-  detailRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 8,
-  },
-  detailLabel: {
-    fontSize: 14,
-    color: "#666666",
-  },
-  detailValue: {
-    fontSize: 14,
-    color: "#1A1A1A",
-    fontWeight: "500",
-    maxWidth: "60%",
-    textAlign: "right",
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#1A1A1A",
-    marginBottom: 12,
-  },
-  merchantContainer: {
-    marginBottom: 8,
-  },
-  reportButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#FFFFFF",
-    paddingVertical: 16,
-    borderRadius: 12,
-    marginBottom: 24,
-  },
-  reportButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#FF3B30",
-    marginLeft: 8,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F5F7FA",
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: "#666666",
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F5F7FA",
-    padding: 24,
-  },
-  errorText: {
-    marginTop: 12,
-    fontSize: 18,
-    color: "#1A1A1A",
-    marginBottom: 24,
-  },
-  backButton: {
-    backgroundColor: "#0047CC",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  backButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
-  },
-});

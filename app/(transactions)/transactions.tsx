@@ -1,13 +1,20 @@
 "use client";
 
-import { Ionicons } from "@expo/vector-icons";
+import * as LocalAuthentication from "expo-local-authentication";
 import { useRouter } from "expo-router";
+import {
+  AlertCircle,
+  Eye,
+  EyeOff,
+  FileText,
+  LogOut,
+} from "lucide-react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   FlatList,
   RefreshControl,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -81,8 +88,37 @@ export default function TransactionsScreen() {
     });
   };
 
-  const toggleAmountsVisibility = () => {
-    setAmountsVisible(!amountsVisible);
+  const toggleAmountsVisibility = async () => {
+    try {
+      // Attempt authentication with better error handling
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: "Use Face ID to reveal transaction amounts",
+        disableDeviceFallback: false,
+        cancelLabel: "Cancel",
+      });
+
+      if (result.success) {
+        setAmountsVisible(!amountsVisible);
+      } else if (result.error === "user_cancel") {
+        console.log("User canceled authentication");
+      } else if (result.error === "lockout") {
+        Alert.alert(
+          "Face ID Temporarily Disabled",
+          "Too many failed attempts. Please try again later or use your device passcode."
+        );
+      } else {
+        Alert.alert(
+          "Authentication Failed",
+          "Please make sure your face is clearly visible to the camera and try again."
+        );
+      }
+    } catch (error) {
+      console.error("Biometric authentication error:", error);
+      Alert.alert(
+        "Authentication Error",
+        "There was a problem with Face ID. Please try again."
+      );
+    }
   };
 
   const handleLogout = () => {
@@ -92,23 +128,25 @@ export default function TransactionsScreen() {
 
   if (initialLoading) {
     return (
-      <View style={styles.centerContainer}>
+      <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#0047CC" />
-        <Text style={styles.loadingText}>Loading transactions...</Text>
+        <Text className="mt-4 text-base text-[#666666]">
+          Loading transactions...
+        </Text>
       </View>
     );
   }
 
   if (error) {
     return (
-      <View style={styles.centerContainer}>
-        <Ionicons name="alert-circle-outline" size={48} color="#FF3B30" />
-        <Text style={styles.errorText}>{error}</Text>
+      <View className="flex-1 justify-center items-center">
+        <AlertCircle size={48} color="#FF3B30" />
+        <Text className="mt-4 text-base text-[#1A1A1A]">{error}</Text>
         <TouchableOpacity
-          style={styles.retryButton}
+          className="mt-6 bg-[#0047CC] py-3 px-6 rounded-lg"
           onPress={() => loadData(true)}
         >
-          <Text style={styles.retryButtonText}>Retry</Text>
+          <Text className="text-base font-semibold text-white">Retry</Text>
         </TouchableOpacity>
       </View>
     );
@@ -116,17 +154,21 @@ export default function TransactionsScreen() {
 
   if (!transactions || transactions.length === 0) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Transactions</Text>
-          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-            <Ionicons name="log-out-outline" size={24} color="#0047CC" />
+      <SafeAreaView className="flex-1 bg-[#F5F7FA]">
+        <View className="flex-row justify-between items-center px-4 py-5">
+          <Text className="text-2xl font-bold text-[#1A1A1A]">
+            Transactions
+          </Text>
+          <TouchableOpacity onPress={handleLogout} className="p-1">
+            <LogOut size={24} color="#0047CC" />
           </TouchableOpacity>
         </View>
-        <View style={styles.centerContainer}>
-          <Ionicons name="document-outline" size={48} color="#999" />
-          <Text style={styles.emptyText}>No transactions found</Text>
-          <Text style={styles.emptySubtext}>
+        <View className="flex-1 justify-center items-center px-6">
+          <FileText size={48} color="#999" />
+          <Text className="mt-4 text-lg font-semibold text-[#1A1A1A]">
+            No transactions found
+          </Text>
+          <Text className="mt-2 text-sm text-[#666666] text-center">
             Your transactions will appear here once they are processed
           </Text>
         </View>
@@ -135,22 +177,19 @@ export default function TransactionsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Transactions</Text>
-        <View style={styles.headerButtons}>
-          <TouchableOpacity
-            onPress={toggleAmountsVisibility}
-            style={styles.visibilityButton}
-          >
-            <Ionicons
-              name={amountsVisible ? "eye-outline" : "eye-off-outline"}
-              size={24}
-              color="#0047CC"
-            />
+    <SafeAreaView className="flex-1 bg-[#F5F7FA]">
+      <View className="flex-row justify-between items-center px-4 py-5">
+        <Text className="text-2xl font-bold text-[#1A1A1A]">Transactions</Text>
+        <View className="flex-row items-center">
+          <TouchableOpacity onPress={toggleAmountsVisibility} className="mr-4">
+            {amountsVisible ? (
+              <Eye size={24} color="#0047CC" />
+            ) : (
+              <EyeOff size={24} color="#0047CC" />
+            )}
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-            <Ionicons name="log-out-outline" size={24} color="#0047CC" />
+          <TouchableOpacity onPress={handleLogout} className="p-1">
+            <LogOut size={24} color="#0047CC" />
           </TouchableOpacity>
         </View>
       </View>
@@ -165,7 +204,7 @@ export default function TransactionsScreen() {
             amountsVisible={amountsVisible}
           />
         )}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={{ padding: 16, paddingBottom: 64 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -179,77 +218,3 @@ export default function TransactionsScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F5F7FA",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-  },
-  headerButtons: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#1A1A1A",
-  },
-  visibilityButton: {
-    marginRight: 16,
-  },
-  logoutButton: {
-    padding: 4,
-  },
-  listContent: {
-    padding: 16,
-    paddingBottom: 24,
-  },
-  centerContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: "#666666",
-  },
-  errorText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: "#1A1A1A",
-    textAlign: "center",
-    marginBottom: 24,
-  },
-  retryButton: {
-    backgroundColor: "#0047CC",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-  },
-  retryButtonText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
-  },
-  emptyText: {
-    marginTop: 16,
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#1A1A1A",
-  },
-  emptySubtext: {
-    marginTop: 8,
-    fontSize: 14,
-    color: "#666666",
-    textAlign: "center",
-  },
-});

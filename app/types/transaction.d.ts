@@ -14,3 +14,9 @@ type Transaction = {
   reference?: string;
   merchant?: Merchant;
 };
+
+type TransactionItemProps = {
+  transaction: Transaction;
+  onPress: () => void;
+  amountsVisible: boolean;
+};
