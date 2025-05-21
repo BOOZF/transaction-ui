@@ -1,6 +1,5 @@
 "use client";
 
-import * as LocalAuthentication from "expo-local-authentication";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
   AlertCircle,
@@ -8,90 +7,30 @@ import {
   ArrowLeft,
   ArrowUp,
   Eye,
+  EyeOff,
   Flag,
 } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   ActivityIndicator,
-  Alert,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { formatCurrency, formatDate, formatTime } from "../utils/formatters";
-import { useTransactions } from "./_components/hooks/transactionContext";
+import { useTransactionDetailsFunctions } from "./_components/hooks";
 
 export default function TransactionDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { getTransactionById } = useTransactions();
-  const [transaction, setTransaction] = useState<Transaction | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [amountVisible, setAmountVisible] = useState(false);
-
-  useEffect(() => {
-    const loadTransaction = async () => {
-      try {
-        setIsLoading(true);
-        if (!id) {
-          Alert.alert("Error", "Transaction ID is missing");
-          router.back();
-          return;
-        }
-
-        const foundTransaction = getTransactionById(id);
-        if (foundTransaction) {
-          setTransaction(foundTransaction);
-        } else {
-          Alert.alert("Error", "Transaction not found");
-          router.back();
-        }
-      } catch (error) {
-        console.error("Error loading transaction:", error);
-        Alert.alert("Error", "Failed to load transaction details");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadTransaction();
-  }, [id, getTransactionById, router]);
-
-  const handleRevealAmount = async () => {
-    try {
-      // Attempt authentication with better error handling
-      const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: "Use Face ID to reveal transaction amount",
-        // Allow passcode fallback for better user experience
-        disableDeviceFallback: false,
-        cancelLabel: "Cancel",
-      });
-
-      if (result.success) {
-        setAmountVisible(true);
-      } else if (result.error === "user_cancel") {
-        // User canceled, do nothing specific here
-        console.log("User canceled authentication");
-      } else if (result.error === "lockout") {
-        Alert.alert(
-          "Face ID Temporarily Disabled",
-          "Too many failed attempts. Please try again later or use your device passcode."
-        );
-      } else {
-        Alert.alert(
-          "Authentication Failed",
-          "Please make sure your face is clearly visible to the camera and try again."
-        );
-      }
-    } catch (error) {
-      console.error("Biometric authentication error:", error);
-      Alert.alert(
-        "Authentication Error",
-        "There was a problem with Face ID. Please try again."
-      );
-    }
-  };
+  const {
+    transaction,
+    isLoading,
+    amountVisible,
+    handleRevealAmount,
+    handleHideAmount,
+  } = useTransactionDetailsFunctions(id);
 
   if (isLoading) {
     return (
@@ -169,7 +108,7 @@ export default function TransactionDetailScreen() {
             <Text className="text-3xl font-bold text-[#1A1A1A]">
               {amountVisible ? formatCurrency(transaction.amount) : "••••••••"}
             </Text>
-            {!amountVisible && (
+            {!amountVisible ? (
               <TouchableOpacity
                 onPress={handleRevealAmount}
                 className="flex-row items-center bg-[#E3F2FD] px-3 py-1.5 rounded-2xl ml-3"
@@ -179,8 +118,23 @@ export default function TransactionDetailScreen() {
                   Reveal
                 </Text>
               </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                onPress={handleHideAmount}
+                className="flex-row items-center bg-[#FFF3E0] px-3 py-1.5 rounded-2xl ml-3"
+              >
+                <EyeOff size={20} color="#FF9800" />
+                <Text className="text-sm font-semibold text-[#FF9800] ml-1">
+                  Hide
+                </Text>
+              </TouchableOpacity>
             )}
           </View>
+          {amountVisible && (
+            <Text className="text-xs text-[#666666] mt-2">
+              Amount will be hidden automatically after 5 minutes
+            </Text>
+          )}
         </View>
 
         <View className="h-px bg-[#E5E5E5] my-4" />

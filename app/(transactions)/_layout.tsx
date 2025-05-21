@@ -2,8 +2,8 @@ import { Stack } from "expo-router";
 import React from "react";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { AuthProvider } from "./_components/hooks/authContext";
-import { TransactionProvider } from "./_components/hooks/transactionContext";
+import { AuthProvider } from "./_components/authContext";
+import { TransactionProvider } from "./_components/transactionContext";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -13,7 +13,14 @@ export default function TabLayout() {
       <TransactionProvider>
         <Stack>
           <Stack.Screen
-            name="transactions"
+            name="auth"
+            options={{
+              title: "Auth",
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="transactionsList"
             options={{
               title: "Transactions",
               headerShown: false,

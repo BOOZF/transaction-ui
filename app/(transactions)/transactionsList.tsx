@@ -1,6 +1,5 @@
 "use client";
 
-import * as LocalAuthentication from "expo-local-authentication";
 import { useRouter } from "expo-router";
 import {
   AlertCircle,
@@ -9,10 +8,9 @@ import {
   FileText,
   LogOut,
 } from "lucide-react-native";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React from "react";
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   RefreshControl,
   Text,
@@ -20,111 +18,24 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuth } from "./_components/hooks/authContext";
-import { useTransactions } from "./_components/hooks/transactionContext";
+import { useTransactionListFunctions } from "./_components/hooks";
 import TransactionItem from "./_components/transactionsItems";
 
 export default function TransactionsScreen() {
   const router = useRouter();
-  const { transactions, isLoading, error, fetchTransactions } =
-    useTransactions();
-  const { isAuthenticated, logout } = useAuth();
-  const [amountsVisible, setAmountsVisible] = useState(false);
-
-  // Separate states for initial loading and refresh loading
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-
-  // Track if this is first load
-  const isFirstLoad = useRef(true);
-
-  // Load data initially or in background
-  const loadData = useCallback(
-    async (showLoading = false) => {
-      if (showLoading) {
-        setInitialLoading(true);
-      }
-
-      try {
-        await fetchTransactions();
-      } catch (error) {
-        console.error("Error loading transactions:", error);
-      } finally {
-        setInitialLoading(false);
-        setRefreshing(false);
-      }
-    },
-    [fetchTransactions]
-  );
-
-  // Pull-to-refresh handler
-  const handleRefresh = useCallback(() => {
-    setRefreshing(true);
-    loadData(false);
-  }, [loadData]);
-
-  useEffect(() => {
-    // Only show loading indicator on first app load
-    if (isFirstLoad.current) {
-      loadData(true);
-      isFirstLoad.current = false;
-    } else {
-      // Silent background refresh for subsequent loads
-      loadData(false);
-    }
-
-    // Set up periodic background refresh - every 30 seconds
-    const refreshInterval = setInterval(() => {
-      loadData(false);
-    }, 30000);
-
-    return () => clearInterval(refreshInterval);
-  }, [loadData]);
-
-  const handleTransactionPress = (id: string) => {
-    router.push({
-      pathname: "/(transactions)/transactionDetails",
-      params: { id },
-    });
-  };
-
-  const toggleAmountsVisibility = async () => {
-    try {
-      // Attempt authentication with better error handling
-      const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: "Use Face ID to reveal transaction amounts",
-        disableDeviceFallback: false,
-        cancelLabel: "Cancel",
-      });
-
-      if (result.success) {
-        setAmountsVisible(!amountsVisible);
-      } else if (result.error === "user_cancel") {
-        console.log("User canceled authentication");
-      } else if (result.error === "lockout") {
-        Alert.alert(
-          "Face ID Temporarily Disabled",
-          "Too many failed attempts. Please try again later or use your device passcode."
-        );
-      } else {
-        Alert.alert(
-          "Authentication Failed",
-          "Please make sure your face is clearly visible to the camera and try again."
-        );
-      }
-    } catch (error) {
-      console.error("Biometric authentication error:", error);
-      Alert.alert(
-        "Authentication Error",
-        "There was a problem with Face ID. Please try again."
-      );
-    }
-  };
-
-  const handleLogout = () => {
-    logout();
-    router.replace("/");
-  };
+  const {
+    transactions,
+    error,
+    initialLoading,
+    refreshing,
+    amountsVisible,
+    loadData,
+    handleRefresh,
+    handleTransactionPress,
+    showAmounts,
+    hideAmounts,
+    handleLogout,
+  } = useTransactionListFunctions();
 
   if (initialLoading) {
     return (
@@ -181,18 +92,28 @@ export default function TransactionsScreen() {
       <View className="flex-row justify-between items-center px-4 py-5">
         <Text className="text-2xl font-bold text-[#1A1A1A]">Transactions</Text>
         <View className="flex-row items-center">
-          <TouchableOpacity onPress={toggleAmountsVisibility} className="mr-4">
-            {amountsVisible ? (
-              <Eye size={24} color="#0047CC" />
-            ) : (
+          {!amountsVisible ? (
+            <TouchableOpacity onPress={showAmounts} className="mr-4">
               <EyeOff size={24} color="#0047CC" />
-            )}
-          </TouchableOpacity>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={hideAmounts} className="mr-4">
+              <Eye size={24} color="#0047CC" />
+            </TouchableOpacity>
+          )}
           <TouchableOpacity onPress={handleLogout} className="p-1">
             <LogOut size={24} color="#0047CC" />
           </TouchableOpacity>
         </View>
       </View>
+
+      {amountsVisible && (
+        <View className="px-4 pb-2">
+          <Text className="text-xs text-[#666666]">
+            Amounts will be hidden automatically after 2 minutes
+          </Text>
+        </View>
+      )}
 
       <FlatList
         data={transactions}

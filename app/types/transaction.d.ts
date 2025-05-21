@@ -28,3 +28,14 @@ type TransactionContextType = {
   fetchTransactions: () => Promise<void>;
   getTransactionById: (id: string) => Transaction | undefined;
 };
+
+type AuthContextType = {
+  isAuthenticated: boolean;
+  login: () => void;
+  logout: () => void;
+};
+
+type AuthResult = {
+  success: boolean;
+  error?: string;
+};

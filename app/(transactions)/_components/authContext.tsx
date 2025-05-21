@@ -3,12 +3,6 @@
 import type React from "react";
 import { createContext, useContext, useState, type ReactNode } from "react";
 
-interface AuthContextType {
-  isAuthenticated: boolean;
-  login: () => void;
-  logout: () => void;
-}
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({

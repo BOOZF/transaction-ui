@@ -1,7 +1,7 @@
 export const formatCurrency = (amount: number): string => {
-  return amount.toLocaleString("en-US", {
+  return amount.toLocaleString("en-MY", {
     style: "currency",
-    currency: "USD",
+    currency: "MYR",
     minimumFractionDigits: 2,
   });
 };
