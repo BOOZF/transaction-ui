@@ -20,7 +20,7 @@ import {
   View,
 } from "react-native";
 import { formatCurrency, formatDate, formatTime } from "../utils/formatters";
-import { useTransactions } from "./context/transactionContext";
+import { useTransactions } from "./_components/hooks/transactionContext";
 
 export default function TransactionDetailScreen() {
   const router = useRouter();

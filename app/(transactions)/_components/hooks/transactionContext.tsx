@@ -1,16 +1,8 @@
 "use client";
 
-import { mockTransactions } from "@/app/(transactions)/context/mockTransaction";
+import { mockTransactions } from "@/app/(transactions)/_components/hooks/transactionData";
 import type React from "react";
 import { createContext, useContext, useState, type ReactNode } from "react";
-
-interface TransactionContextType {
-  transactions: Transaction[];
-  isLoading: boolean;
-  error: string | null;
-  fetchTransactions: () => Promise<void>;
-  getTransactionById: (id: string) => Transaction | undefined;
-}
 
 const TransactionContext = createContext<TransactionContextType | undefined>(
   undefined

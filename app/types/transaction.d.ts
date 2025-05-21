@@ -20,3 +20,11 @@ type TransactionItemProps = {
   onPress: () => void;
   amountsVisible: boolean;
 };
+
+type TransactionContextType = {
+  transactions: Transaction[];
+  isLoading: boolean;
+  error: string | null;
+  fetchTransactions: () => Promise<void>;
+  getTransactionById: (id: string) => Transaction | undefined;
+};

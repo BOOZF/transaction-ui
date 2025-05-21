@@ -2,8 +2,8 @@ import { Stack } from "expo-router";
 import React from "react";
 
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { AuthProvider } from "./context/authContext";
-import { TransactionProvider } from "./context/transactionContext";
+import { AuthProvider } from "./_components/hooks/authContext";
+import { TransactionProvider } from "./_components/hooks/transactionContext";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();

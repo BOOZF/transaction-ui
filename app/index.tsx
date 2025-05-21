@@ -16,7 +16,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Import AuthContext
-import { AuthProvider, useAuth } from "./(transactions)/context/authContext";
+import {
+  AuthProvider,
+  useAuth,
+} from "./(transactions)/_components/hooks/authContext";
 
 // Wrap the component with AuthProvider
 export default function App() {
@@ -116,7 +119,7 @@ function AuthScreen() {
       if (result.success) {
         login();
         // Navigate to the transactions screen
-        router.push("/(transactions)/transactions");
+        router.push("/(transactions)/transactionsList");
       } else if (result.error === "user_cancel") {
         // User canceled, do nothing specific here
         console.log("User canceled authentication");

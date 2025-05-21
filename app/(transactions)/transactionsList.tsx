@@ -20,9 +20,9 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import TransactionItem from "./components/transactionsItems";
-import { useAuth } from "./context/authContext";
-import { useTransactions } from "./context/transactionContext";
+import { useAuth } from "./_components/hooks/authContext";
+import { useTransactions } from "./_components/hooks/transactionContext";
+import TransactionItem from "./_components/transactionsItems";
 
 export default function TransactionsScreen() {
   const router = useRouter();
