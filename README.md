@@ -1,3 +1,55 @@
+# RYT App
+
+A React Native application built with Expo, NativeWind, and Lucide icons.
+
+## Features
+
+- React Native with Expo
+- NativeWind for styling (Tailwind CSS for React Native)
+- Lucide icons
+- TypeScript support
+- Dark/Light theme support
+
+## Getting Started
+
+1. Install dependencies:
+
+```bash
+pnpm install
+```
+
+2. Start the development server:
+
+```bash
+pnpm start
+```
+
+## Using NativeWind
+
+Use the `className` prop to add styles to your components:
+
+```tsx
+<View className="flex-1 bg-white dark:bg-gray-900 p-4">
+  <Text className="text-xl font-bold text-blue-500">Hello World</Text>
+</View>
+```
+
+## Using Lucide Icons
+
+Import icons directly from the lucide-react-native package:
+
+```tsx
+import { Heart, Home, Settings } from "lucide-react-native";
+
+// Use in your component
+<Heart size={24} className="text-red-500" />;
+```
+
+## Notes
+
+- The `className` prop works on both React Native components and Lucide icons
+- NativeWind automatically handles dark mode when using `dark:` prefix in class names
+
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
