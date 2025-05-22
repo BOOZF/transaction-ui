@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Import hook
-import { useAuthFunctions } from "./_components/hooks";
+import { useAuthFunctions } from "@/app/lib/useAuth";
 
 export default function AuthScreen() {
   const {

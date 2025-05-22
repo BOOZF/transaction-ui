@@ -15,12 +15,6 @@ type Transaction = {
   merchant?: Merchant;
 };
 
-type TransactionItemProps = {
-  transaction: Transaction;
-  onPress: () => void;
-  amountsVisible: boolean;
-};
-
 type TransactionContextType = {
   transactions: Transaction[];
   isLoading: boolean;

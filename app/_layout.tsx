@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/components/auth/authContext";
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
@@ -5,7 +6,6 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import { AuthProvider } from "./(transactions)/_components/authContext";
 import "./global.css";
 
 // Create a client

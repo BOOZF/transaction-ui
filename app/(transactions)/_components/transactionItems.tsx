@@ -12,11 +12,15 @@ import {
 import type React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
-export default function TransactionItem({
+export default function TransactionItems({
   transaction,
   onPress,
   amountsVisible,
-}: TransactionItemProps) {
+}: {
+  transaction: Transaction;
+  onPress: () => void;
+  amountsVisible: boolean;
+}) {
   const { type, description, amount, date, category } = transaction;
 
   const getIcon = () => {

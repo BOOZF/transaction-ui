@@ -19,7 +19,8 @@ import {
   View,
 } from "react-native";
 import { formatCurrency, formatDate, formatTime } from "../utils/formatters";
-import { useTransactionDetailsFunctions } from "./_components/hooks";
+import { useTransactionDetails } from "./_components/hooks";
+import TransactionDetailsItems from "./_components/transactionDetailsItems";
 
 export default function TransactionDetailScreen() {
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function TransactionDetailScreen() {
     amountVisible,
     handleRevealAmount,
     handleHideAmount,
-  } = useTransactionDetailsFunctions(id);
+  } = useTransactionDetails(id);
 
   if (isLoading) {
     return (
@@ -140,12 +141,24 @@ export default function TransactionDetailScreen() {
         <View className="h-px bg-[#E5E5E5] my-4" />
 
         <View className="mb-2">
-          <DetailRow label="Transaction ID" value={transaction.id} />
-          <DetailRow label="Description" value={transaction.description} />
-          <DetailRow label="Category" value={transaction.category} />
-          <DetailRow label="Status" value={transaction.status} />
+          <TransactionDetailsItems
+            label="Transaction ID"
+            value={transaction.id}
+          />
+          <TransactionDetailsItems
+            label="Description"
+            value={transaction.description}
+          />
+          <TransactionDetailsItems
+            label="Category"
+            value={transaction.category}
+          />
+          <TransactionDetailsItems label="Status" value={transaction.status} />
           {transaction.reference && (
-            <DetailRow label="Reference" value={transaction.reference} />
+            <TransactionDetailsItems
+              label="Reference"
+              value={transaction.reference}
+            />
           )}
         </View>
 
@@ -156,9 +169,12 @@ export default function TransactionDetailScreen() {
               <Text className="text-base font-semibold text-[#1A1A1A] mb-3">
                 Merchant Details
               </Text>
-              <DetailRow label="Name" value={transaction.merchant.name} />
+              <TransactionDetailsItems
+                label="Name"
+                value={transaction.merchant.name}
+              />
               {transaction.merchant.location && (
-                <DetailRow
+                <TransactionDetailsItems
                   label="Location"
                   value={transaction.merchant.location}
                 />
@@ -177,12 +193,3 @@ export default function TransactionDetailScreen() {
     </ScrollView>
   );
 }
-
-const DetailRow = ({ label, value }: { label: string; value: string }) => (
-  <View className="flex-row justify-between py-2">
-    <Text className="text-sm text-[#666666]">{label}</Text>
-    <Text className="text-sm text-[#1A1A1A] font-medium max-w-[60%] text-right">
-      {value}
-    </Text>
-  </View>
-);

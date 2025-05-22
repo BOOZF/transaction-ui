@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "expo-router";
 import {
   AlertCircle,
   Eye,
@@ -18,11 +17,10 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useTransactionListFunctions } from "./_components/hooks";
-import TransactionItem from "./_components/transactionsItems";
+import { useTransactionList } from "./_components/hooks";
+import TransactionItems from "./_components/transactionItems";
 
 export default function TransactionsScreen() {
-  const router = useRouter();
   const {
     transactions,
     error,
@@ -35,7 +33,7 @@ export default function TransactionsScreen() {
     showAmounts,
     hideAmounts,
     handleLogout,
-  } = useTransactionListFunctions();
+  } = useTransactionList();
 
   if (initialLoading) {
     return (
@@ -119,7 +117,7 @@ export default function TransactionsScreen() {
         data={transactions}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TransactionItem
+          <TransactionItems
             transaction={item}
             onPress={() => handleTransactionPress(item.id)}
             amountsVisible={amountsVisible}
