@@ -88,7 +88,7 @@ export function useAuthFunctions() {
       if (result.success) {
         login();
         // Navigate to the transactions screen
-        router.push("/(transactions)/transactionsList");
+        router.push("/transactions/transactionsList");
       } else if (result.error === "user_cancel") {
         // User canceled, do nothing specific here
         console.log("User canceled authentication");

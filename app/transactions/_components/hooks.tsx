@@ -215,7 +215,7 @@ export function useTransactionList() {
 
   const handleTransactionPress = (id: string) => {
     router.push({
-      pathname: "/(transactions)/transactionDetails",
+      pathname: "/transactions/transactionDetails",
       params: { id },
     });
   };
